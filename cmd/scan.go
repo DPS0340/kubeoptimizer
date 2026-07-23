@@ -46,9 +46,9 @@ var scanCmd = &cobra.Command{
 		}
 		// Client construction never contacts the cluster; actual
 		// availability is probed by Collect and reflected in the report.
-		mc, err := metricsclient.NewForConfig(cfg)
-		if err != nil {
-			mc = nil
+		var mc metricsclient.Interface
+		if m, err := metricsclient.NewForConfig(cfg); err == nil {
+			mc = m
 		}
 
 		rates := cost.DefaultRates()
