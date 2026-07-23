@@ -42,6 +42,7 @@ func All() []Check {
 	return []Check{
 		PVCheck{},
 		LBCheck{},
+		ZombieCheck{},
 	}
 }
 
