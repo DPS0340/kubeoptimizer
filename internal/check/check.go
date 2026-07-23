@@ -41,6 +41,7 @@ type Check interface {
 func All() []Check {
 	return []Check{
 		PVCheck{},
+		LBCheck{},
 	}
 }
 
