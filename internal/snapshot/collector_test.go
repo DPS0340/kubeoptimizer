@@ -3,12 +3,15 @@ package snapshot
 import (
 	"context"
 	"errors"
+	"strings"
 	"testing"
 
 	corev1 "k8s.io/api/core/v1"
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/client-go/kubernetes/fake"
 	k8stesting "k8s.io/client-go/testing"
 	metricsv1beta1 "k8s.io/metrics/pkg/apis/metrics/v1beta1"
@@ -71,5 +74,43 @@ func TestCollectMetrics(t *testing.T) {
 	u := s.PodUsage[Key("default", "p1")]
 	if u.CPUMilli != 250 || u.MemBytes != 512*1024*1024 {
 		t.Fatalf("usage = %+v", u)
+	}
+}
+
+func TestCollectMetricsForbiddenSurfaces(t *testing.T) {
+	kube := fake.NewSimpleClientset()
+	mc := metricsfake.NewSimpleClientset()
+	gr := schema.GroupResource{Group: "metrics.k8s.io", Resource: "pods"}
+	mc.PrependReactor("list", "pods", func(k8stesting.Action) (bool, runtime.Object, error) {
+		return true, nil, apierrors.NewForbidden(gr, "", errors.New("no access"))
+	})
+	s := Collect(context.Background(), kube, mc)
+	if s.HasMetrics {
+		t.Fatal("HasMetrics must be false when metrics list is forbidden")
+	}
+	found := false
+	for _, e := range s.Errors {
+		if strings.Contains(e, "podmetrics") {
+			found = true
+		}
+	}
+	if !found {
+		t.Fatalf("Errors must contain a podmetrics entry, got %+v", s.Errors)
+	}
+}
+
+func TestCollectMetricsNotFoundIsQuiet(t *testing.T) {
+	kube := fake.NewSimpleClientset()
+	mc := metricsfake.NewSimpleClientset()
+	gr := schema.GroupResource{Group: "metrics.k8s.io", Resource: "pods"}
+	mc.PrependReactor("list", "pods", func(k8stesting.Action) (bool, runtime.Object, error) {
+		return true, nil, apierrors.NewNotFound(gr, "")
+	})
+	s := Collect(context.Background(), kube, mc)
+	if s.HasMetrics {
+		t.Fatal("HasMetrics must be false when metrics API is not found")
+	}
+	if len(s.Errors) != 0 {
+		t.Fatalf("NotFound must not add an error entry, got %+v", s.Errors)
 	}
 }

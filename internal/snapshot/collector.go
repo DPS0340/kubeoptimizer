@@ -6,6 +6,7 @@ import (
 	"time"
 
 	corev1 "k8s.io/api/core/v1"
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	metricsclient "k8s.io/metrics/pkg/client/clientset/versioned"
@@ -63,9 +64,13 @@ func Collect(ctx context.Context, kube kubernetes.Interface, mc metricsclient.In
 	}
 
 	if mc != nil {
-		// Absence of metrics-server is expected, not an error: leave
-		// HasMetrics=false and let the report note it.
-		if l, err := mc.MetricsV1beta1().PodMetricses("").List(ctx, opts); err == nil {
+		if l, err := mc.MetricsV1beta1().PodMetricses("").List(ctx, opts); err != nil {
+			// A missing metrics API is expected (HasMetrics stays false, report
+			// notes it). Any other failure must surface — never silently.
+			if !apierrors.IsNotFound(err) {
+				errf("podmetrics: %v", err)
+			}
+		} else {
 			s.HasMetrics = true
 			for _, pm := range l.Items {
 				var u PodUsage
