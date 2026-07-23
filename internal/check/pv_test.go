@@ -13,6 +13,15 @@ import (
 
 func testModel() *cost.Model { return cost.NewModel(cost.DefaultRates()) }
 
+func findByTarget(fs []Finding, target string) *Finding {
+	for i, f := range fs {
+		if f.Target == target {
+			return &fs[i]
+		}
+	}
+	return nil
+}
+
 func TestPVCheck(t *testing.T) {
 	s := &snapshot.Snapshot{
 		PVs: []corev1.PersistentVolume{
@@ -27,6 +36,12 @@ func TestPVCheck(t *testing.T) {
 				Spec: corev1.PersistentVolumeSpec{Capacity: corev1.ResourceList{
 					corev1.ResourceStorage: resource.MustParse("10Gi")}},
 				Status: corev1.PersistentVolumeStatus{Phase: corev1.VolumeBound},
+			},
+			{ // Available → estimate finding
+				ObjectMeta: metav1.ObjectMeta{Name: "pv-available"},
+				Spec: corev1.PersistentVolumeSpec{Capacity: corev1.ResourceList{
+					corev1.ResourceStorage: resource.MustParse("20Gi")}},
+				Status: corev1.PersistentVolumeStatus{Phase: corev1.VolumeAvailable},
 			},
 		},
 		PVCs: []corev1.PersistentVolumeClaim{
@@ -54,13 +69,52 @@ func TestPVCheck(t *testing.T) {
 		}},
 	}
 	fs := PVCheck{}.Run(s, testModel())
-	if len(fs) != 2 {
-		t.Fatalf("findings = %d, want 2 (released PV + orphan PVC), got %+v", len(fs), fs)
+	if len(fs) != 3 {
+		t.Fatalf("findings = %d, want 3 (released PV + available PV + orphan PVC), got %+v", len(fs), fs)
 	}
-	if fs[0].Confidence != Certain {
-		t.Fatalf("released PV must be certain, got %s", fs[0].Confidence)
+
+	// Assert released PV finding
+	releasedPV := findByTarget(fs, "pv/pv-released")
+	if releasedPV == nil {
+		t.Fatalf("missing finding for pv/pv-released")
 	}
-	if fs[0].MonthlyCost < 9.9 || fs[0].MonthlyCost > 10.1 { // 100Gi × $0.10
-		t.Fatalf("released PV cost = %v, want ~10", fs[0].MonthlyCost)
+	if releasedPV.Confidence != Certain {
+		t.Fatalf("released PV must be Certain, got %s", releasedPV.Confidence)
+	}
+	if releasedPV.MonthlyCost < 9.9 || releasedPV.MonthlyCost > 10.1 { // 100Gi × $0.10
+		t.Fatalf("released PV cost = %v, want ~10", releasedPV.MonthlyCost)
+	}
+	if releasedPV.CostBasis == "" {
+		t.Fatalf("released PV must have CostBasis")
+	}
+
+	// Assert available PV finding
+	availablePV := findByTarget(fs, "pv/pv-available")
+	if availablePV == nil {
+		t.Fatalf("missing finding for pv/pv-available")
+	}
+	if availablePV.Confidence != Estimate {
+		t.Fatalf("available PV must be Estimate, got %s", availablePV.Confidence)
+	}
+	if availablePV.MonthlyCost < 1.9 || availablePV.MonthlyCost > 2.1 { // 20Gi × $0.10
+		t.Fatalf("available PV cost = %v, want ~2", availablePV.MonthlyCost)
+	}
+	if availablePV.CostBasis == "" {
+		t.Fatalf("available PV must have CostBasis")
+	}
+
+	// Assert orphan PVC finding
+	orphanPVC := findByTarget(fs, "pvc/default/orphan")
+	if orphanPVC == nil {
+		t.Fatalf("missing finding for pvc/default/orphan")
+	}
+	if orphanPVC.Confidence != Estimate {
+		t.Fatalf("orphan PVC must be Estimate, got %s", orphanPVC.Confidence)
+	}
+	if orphanPVC.MonthlyCost < 4.9 || orphanPVC.MonthlyCost > 5.1 { // 50Gi × $0.10
+		t.Fatalf("orphan PVC cost = %v, want ~5", orphanPVC.MonthlyCost)
+	}
+	if orphanPVC.CostBasis == "" {
+		t.Fatalf("orphan PVC must have CostBasis")
 	}
 }
