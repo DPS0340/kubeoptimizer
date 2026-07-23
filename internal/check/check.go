@@ -40,12 +40,13 @@ type Check interface {
 // All returns every registered check. Each check task appends here.
 func All() []Check {
 	return []Check{
+		RightsizingCheck{},
+		NodeUtilCheck{},
+		GPUCheck{},
 		PVCheck{},
 		LBCheck{},
 		ZombieCheck{},
 		NoRequestsCheck{},
-		GPUCheck{},
-		NodeUtilCheck{},
 	}
 }
 
