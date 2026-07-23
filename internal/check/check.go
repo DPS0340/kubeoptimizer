@@ -39,7 +39,9 @@ type Check interface {
 
 // All returns every registered check. Each check task appends here.
 func All() []Check {
-	return []Check{}
+	return []Check{
+		PVCheck{},
+	}
 }
 
 func podRequests(p corev1.Pod) (cpuMilli, memBytes int64) {
