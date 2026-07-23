@@ -69,9 +69,19 @@ func (RightsizingCheck) Run(s *snapshot.Snapshot, m *cost.Model) []Finding {
 		recCPU, recMem := g.reqCPU, g.reqMem
 		if overCPU {
 			recCPU = max64(g.useCPU*3/2, floorCPUMilli*g.pods)
+			if recCPU > g.reqCPU {
+				recCPU = g.reqCPU // floor exceeds current request — nothing to save on this axis
+			}
 		}
 		if overMem {
 			recMem = max64(g.useMem*3/2, floorMemBytes*g.pods)
+			if recMem > g.reqMem {
+				recMem = g.reqMem // floor exceeds current request — nothing to save on this axis
+			}
+		}
+		// If both dimensions clamped to their originals, skip finding (zero savings)
+		if recCPU == g.reqCPU && recMem == g.reqMem {
+			continue
 		}
 		usd, basis := m.RequestsMonthlyUSD(g.reqCPU-recCPU, g.reqMem-recMem)
 		out = append(out, Finding{
