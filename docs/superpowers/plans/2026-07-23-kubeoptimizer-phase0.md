@@ -13,7 +13,7 @@
 - **읽기전용:** 코드 전체에서 k8s API 동사는 get/list만. mutate 동사(create/update/patch/delete) 사용 금지.
 - **텔레메트리 없음:** k8s API 외 어떤 네트워크 호출도 금지.
 - **의존성 제한:** k8s.io/{client-go,api,apimachinery,metrics} + spf13/cobra만.
-- **모듈 경로:** `github.com/lee/kubeoptimizer` (GitHub 공개 직전 실제 username으로 sed 치환).
+- **모듈 경로:** `github.com/DPS0340/kubeoptimizer` (GitHub 공개 직전 실제 username으로 sed 치환).
 - **비용 표기:** USD, 월 단위(HoursPerMonth=730), 모든 Finding에 산출 근거(CostBasis) 문자열 필수.
 - **Confidence:** `certain` | `estimate` 두 값만.
 - **UI 문자열:** 영어 (글로벌 OSS). 문서/커밋은 한국어 허용.
@@ -44,7 +44,7 @@
 
 ```bash
 cd /Users/lee/programming/kubeoptimizer
-go mod init github.com/lee/kubeoptimizer
+go mod init github.com/DPS0340/kubeoptimizer
 go get k8s.io/client-go@latest k8s.io/api@latest k8s.io/apimachinery@latest k8s.io/metrics@latest github.com/spf13/cobra@latest
 ```
 
@@ -573,8 +573,8 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
 
-	"github.com/lee/kubeoptimizer/internal/cost"
-	"github.com/lee/kubeoptimizer/internal/snapshot"
+	"github.com/DPS0340/kubeoptimizer/internal/cost"
+	"github.com/DPS0340/kubeoptimizer/internal/snapshot"
 )
 
 type Confidence string
@@ -688,8 +688,8 @@ import (
 	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	"github.com/lee/kubeoptimizer/internal/cost"
-	"github.com/lee/kubeoptimizer/internal/snapshot"
+	"github.com/DPS0340/kubeoptimizer/internal/cost"
+	"github.com/DPS0340/kubeoptimizer/internal/snapshot"
 )
 
 func testModel() *cost.Model { return cost.NewModel(cost.DefaultRates()) }
@@ -764,8 +764,8 @@ import (
 
 	corev1 "k8s.io/api/core/v1"
 
-	"github.com/lee/kubeoptimizer/internal/cost"
-	"github.com/lee/kubeoptimizer/internal/snapshot"
+	"github.com/DPS0340/kubeoptimizer/internal/cost"
+	"github.com/DPS0340/kubeoptimizer/internal/snapshot"
 )
 
 // PVCheck finds storage that is billed but serves no workload:
@@ -873,7 +873,7 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	"github.com/lee/kubeoptimizer/internal/snapshot"
+	"github.com/DPS0340/kubeoptimizer/internal/snapshot"
 )
 
 func TestLBCheck(t *testing.T) {
@@ -928,8 +928,8 @@ import (
 
 	corev1 "k8s.io/api/core/v1"
 
-	"github.com/lee/kubeoptimizer/internal/cost"
-	"github.com/lee/kubeoptimizer/internal/snapshot"
+	"github.com/DPS0340/kubeoptimizer/internal/cost"
+	"github.com/DPS0340/kubeoptimizer/internal/snapshot"
 )
 
 // LBCheck finds LoadBalancer services with zero ready endpoints:
@@ -1012,7 +1012,7 @@ import (
 	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	"github.com/lee/kubeoptimizer/internal/snapshot"
+	"github.com/DPS0340/kubeoptimizer/internal/snapshot"
 )
 
 func TestZombieCheck(t *testing.T) {
@@ -1094,8 +1094,8 @@ import (
 
 	corev1 "k8s.io/api/core/v1"
 
-	"github.com/lee/kubeoptimizer/internal/cost"
-	"github.com/lee/kubeoptimizer/internal/snapshot"
+	"github.com/DPS0340/kubeoptimizer/internal/cost"
+	"github.com/DPS0340/kubeoptimizer/internal/snapshot"
 )
 
 const (
@@ -1216,7 +1216,7 @@ import (
 	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	"github.com/lee/kubeoptimizer/internal/snapshot"
+	"github.com/DPS0340/kubeoptimizer/internal/snapshot"
 )
 
 func TestNoRequestsCheck(t *testing.T) {
@@ -1267,8 +1267,8 @@ package check
 import (
 	corev1 "k8s.io/api/core/v1"
 
-	"github.com/lee/kubeoptimizer/internal/cost"
-	"github.com/lee/kubeoptimizer/internal/snapshot"
+	"github.com/DPS0340/kubeoptimizer/internal/cost"
+	"github.com/DPS0340/kubeoptimizer/internal/snapshot"
 )
 
 // NoRequestsCheck flags workloads whose containers set no resource
@@ -1356,7 +1356,7 @@ import (
 	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	"github.com/lee/kubeoptimizer/internal/snapshot"
+	"github.com/DPS0340/kubeoptimizer/internal/snapshot"
 )
 
 func TestGPUCheck(t *testing.T) {
@@ -1412,8 +1412,8 @@ import (
 
 	corev1 "k8s.io/api/core/v1"
 
-	"github.com/lee/kubeoptimizer/internal/cost"
-	"github.com/lee/kubeoptimizer/internal/snapshot"
+	"github.com/DPS0340/kubeoptimizer/internal/cost"
+	"github.com/DPS0340/kubeoptimizer/internal/snapshot"
 )
 
 var gpuResource = corev1.ResourceName("nvidia.com/gpu")
@@ -1512,7 +1512,7 @@ import (
 	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	"github.com/lee/kubeoptimizer/internal/snapshot"
+	"github.com/DPS0340/kubeoptimizer/internal/snapshot"
 )
 
 func TestNodeUtilCheck(t *testing.T) {
@@ -1575,8 +1575,8 @@ import (
 
 	corev1 "k8s.io/api/core/v1"
 
-	"github.com/lee/kubeoptimizer/internal/cost"
-	"github.com/lee/kubeoptimizer/internal/snapshot"
+	"github.com/DPS0340/kubeoptimizer/internal/cost"
+	"github.com/DPS0340/kubeoptimizer/internal/snapshot"
 )
 
 const nodeUtilThresholdPct = 50
@@ -1679,7 +1679,7 @@ import (
 	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	"github.com/lee/kubeoptimizer/internal/snapshot"
+	"github.com/DPS0340/kubeoptimizer/internal/snapshot"
 )
 
 func rsPod(name, rsName, cpu, mem string) corev1.Pod {
@@ -1761,8 +1761,8 @@ import (
 
 	corev1 "k8s.io/api/core/v1"
 
-	"github.com/lee/kubeoptimizer/internal/cost"
-	"github.com/lee/kubeoptimizer/internal/snapshot"
+	"github.com/DPS0340/kubeoptimizer/internal/cost"
+	"github.com/DPS0340/kubeoptimizer/internal/snapshot"
 )
 
 const (
@@ -1904,8 +1904,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/lee/kubeoptimizer/internal/check"
-	"github.com/lee/kubeoptimizer/internal/snapshot"
+	"github.com/DPS0340/kubeoptimizer/internal/check"
+	"github.com/DPS0340/kubeoptimizer/internal/snapshot"
 )
 
 func fixtures() (*snapshot.Snapshot, []check.Finding) {
@@ -1979,8 +1979,8 @@ import (
 	"sort"
 	"time"
 
-	"github.com/lee/kubeoptimizer/internal/check"
-	"github.com/lee/kubeoptimizer/internal/snapshot"
+	"github.com/DPS0340/kubeoptimizer/internal/check"
+	"github.com/DPS0340/kubeoptimizer/internal/snapshot"
 )
 
 type Report struct {
@@ -2171,10 +2171,10 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 	metricsclient "k8s.io/metrics/pkg/client/clientset/versioned"
 
-	"github.com/lee/kubeoptimizer/internal/check"
-	"github.com/lee/kubeoptimizer/internal/cost"
-	"github.com/lee/kubeoptimizer/internal/report"
-	"github.com/lee/kubeoptimizer/internal/snapshot"
+	"github.com/DPS0340/kubeoptimizer/internal/check"
+	"github.com/DPS0340/kubeoptimizer/internal/cost"
+	"github.com/DPS0340/kubeoptimizer/internal/report"
+	"github.com/DPS0340/kubeoptimizer/internal/snapshot"
 )
 
 var (
@@ -2260,7 +2260,7 @@ package main
 import (
 	"os"
 
-	"github.com/lee/kubeoptimizer/cmd"
+	"github.com/DPS0340/kubeoptimizer/cmd"
 )
 
 func main() {
@@ -2359,7 +2359,7 @@ TOTAL      $2402.51/mo estimated waste (9 findings)
 ## Install
 
 ```
-go install github.com/lee/kubeoptimizer@latest
+go install github.com/DPS0340/kubeoptimizer@latest
 ```
 
 ## What it finds
