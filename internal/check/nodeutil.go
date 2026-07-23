@@ -46,6 +46,10 @@ func (NodeUtilCheck) Run(s *snapshot.Snapshot, m *cost.Model) []Finding {
 		if cpuPct >= nodeUtilThresholdPct || memPct >= nodeUtilThresholdPct {
 			continue
 		}
+		// idle GPU nodes are priced whole by GPUCheck — don't double-count
+		if gpuCap, gpuReq := nodeGPU(s, n); gpuCap > 0 && gpuReq == 0 {
+			continue
+		}
 		usd, basis := m.NodeMonthlyUSD(n)
 		out = append(out, Finding{
 			CheckID:     "underutilized-nodes",

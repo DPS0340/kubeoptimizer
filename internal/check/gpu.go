@@ -11,6 +11,28 @@ import (
 
 var gpuResource = corev1.ResourceName("nvidia.com/gpu")
 
+// nodeGPU returns the node's GPU allocatable and the total GPUs
+// requested by active (non-Succeeded/Failed) pods on it.
+func nodeGPU(s *snapshot.Snapshot, n corev1.Node) (capacity, requested int64) {
+	capQ, ok := n.Status.Allocatable[gpuResource]
+	if !ok {
+		return 0, 0
+	}
+	capacity = capQ.Value()
+	for _, p := range s.Pods {
+		if p.Spec.NodeName != n.Name ||
+			p.Status.Phase == corev1.PodSucceeded || p.Status.Phase == corev1.PodFailed {
+			continue
+		}
+		for _, c := range p.Spec.Containers {
+			if q, ok := c.Resources.Requests[gpuResource]; ok {
+				requested += q.Value()
+			}
+		}
+	}
+	return capacity, requested
+}
+
 // GPUCheck finds GPU nodes whose GPUs nobody requested. GPU instances
 // are the most expensive line item in most clusters; an idle one is
 // the single biggest finding a scan can produce.
@@ -25,18 +47,7 @@ func (GPUCheck) Run(s *snapshot.Snapshot, m *cost.Model) []Finding {
 		if !ok || capQ.IsZero() {
 			continue
 		}
-		var requested int64
-		for _, p := range s.Pods {
-			if p.Spec.NodeName != n.Name ||
-				p.Status.Phase == corev1.PodSucceeded || p.Status.Phase == corev1.PodFailed {
-				continue
-			}
-			for _, c := range p.Spec.Containers {
-				if q, ok := c.Resources.Requests[gpuResource]; ok {
-					requested += q.Value()
-				}
-			}
-		}
+		_, requested := nodeGPU(s, n)
 		switch {
 		case requested == 0:
 			usd, basis := m.NodeMonthlyUSD(n)
