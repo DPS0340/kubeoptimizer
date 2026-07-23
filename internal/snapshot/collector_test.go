@@ -50,7 +50,7 @@ func TestCollectIsolatesFailures(t *testing.T) {
 
 func TestCollectMetrics(t *testing.T) {
 	kube := fake.NewSimpleClientset()
-	mc := metricsfake.NewSimpleClientset(&metricsv1beta1.PodMetrics{
+	pm := &metricsv1beta1.PodMetrics{
 		ObjectMeta: metav1.ObjectMeta{Name: "p1", Namespace: "default"},
 		Containers: []metricsv1beta1.ContainerMetrics{{
 			Name: "c1",
@@ -59,6 +59,10 @@ func TestCollectMetrics(t *testing.T) {
 				corev1.ResourceMemory: resource.MustParse("512Mi"),
 			},
 		}},
+	}
+	mc := metricsfake.NewSimpleClientset()
+	mc.PrependReactor("list", "pods", func(k8stesting.Action) (bool, runtime.Object, error) {
+		return true, &metricsv1beta1.PodMetricsList{Items: []metricsv1beta1.PodMetrics{*pm}}, nil
 	})
 	s := Collect(context.Background(), kube, mc)
 	if !s.HasMetrics {
