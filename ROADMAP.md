@@ -1,0 +1,116 @@
+# Roadmap
+
+kubeoptimizer is a read-only Kubernetes cost waste scanner built as an
+open-core CLI: the free tier must produce the "we're wasting $X/mo"
+shock number on its own; the paid tier makes that number precise,
+continuous, and reportable. This roadmap tracks where the project is
+and what ships next. Dates are intentionally loose — order matters
+more than dates.
+
+## Current state — Phase 0 core: done ✅
+
+Everything needed for `kubeoptimizer scan` to work against any cluster
+with nothing but a kubeconfig:
+
+- **Snapshot collector** with per-resource failure isolation and
+  metrics-server auto-detection (`internal/snapshot`).
+- **7 waste checks** (`internal/check`, one rule = one file):
+  `overprovisioned-requests`, `underutilized-nodes`, `idle-gpu`,
+  `unused-pv`, `idle-loadbalancer`, `zombie-workloads`, `no-requests`.
+- **Cost model** with embedded instance-type pricing table and
+  per-resource fallback plus `--cpu-rate`/`--mem-rate` overrides
+  (`internal/cost`). Every dollar figure carries its derivation
+  (CostBasis) and a confidence level.
+- **Reporter** with terminal table and JSON output; skipped data
+  sources and collection failures surfaced as notes (`internal/report`).
+- **CLI** (`kubeoptimizer scan`) with kubeconfig/context/output flags.
+- Unit tests across all packages + kind e2e smoke script with planted
+  waste fixtures (`hack/e2e-kind.sh`).
+- Minimal read-only RBAC manifest, Apache-2.0 license, README.
+
+## Phase 0 — launch & distribution (next up)
+
+Goal: get the tool into people's hands and collect "our cluster wastes
+$X/mo" screenshots — the best marketing asset this project can have.
+
+- [ ] **CI pipeline** (GitHub Actions): `go test ./...`, `go vet`,
+      lint, and the kind e2e smoke on every PR.
+- [ ] **Release automation**: goreleaser (or equivalent) producing
+      single static binaries for linux/darwin/windows, amd64/arm64,
+      attached to GitHub Releases with checksums.
+- [ ] **`v0.1.0` tag** — first public release.
+- [ ] **krew plugin** (`kubectl optimize scan` or similar): manifest +
+      submission to krew-index.
+- [ ] **Homebrew tap** for `brew install`.
+- [ ] **Launch**: r/kubernetes, Hacker News, Kubernetes Slack, with a
+      real scan screenshot up front.
+- [ ] **`--namespace` filter** and exit-code contract for scripting
+      (e.g. nonzero when waste exceeds a `--fail-over` threshold).
+
+Success metric: GitHub stars, issues filed by strangers, and at least
+a handful of shared scan screenshots.
+
+## Phase 1 — paid tier & first revenue
+
+Goal: the moment a team lead needs "a report to show the boss", there
+is something to buy. Price sketch: ~$199/cluster/year; free for
+individuals forever.
+
+- [ ] **Prometheus data source** (`--prom-url`, auto-detect where
+      possible): p95/p99 time-series based **precision right-sizing**
+      over a configurable window — the free tier keeps the rough
+      metrics-server variant.
+- [ ] **HTML executive report**: self-contained single file, savings
+      summary first, per-finding detail with cost derivations —
+      "the document you show your boss".
+- [ ] **License key gate**: offline signature verification, no
+      phone-home (this is a selling point — keep it that way). Same
+      binary; paid features unlock with a key.
+- [ ] **Payments**: low-friction channel first (Lemon Squeezy /
+      Gumroad); invoices for companies.
+- [ ] Pricing page + docs separating free vs paid clearly.
+
+## Phase 2 — expansion (only after paid demand is proven)
+
+Each item ships only when actual paying users ask for it:
+
+- [ ] **Trend tracking**: store scan history locally, show waste over
+      time ("we cut $X since last month").
+- [ ] **CI cost-regression mode**: fail a pipeline when a diff
+      introduces waste above a threshold.
+- [ ] **Multi-cluster aggregation**: one report across contexts /
+      fleets.
+- [ ] SaaS dashboard — explicitly **not before** paying customers
+      request it.
+
+## Continuous / technical debt
+
+Ongoing work that doesn't belong to a phase:
+
+- **Check accuracy over features.** The rules are the product; false
+  positives kill trust faster than missing checks. Every reported
+  false positive gets a regression fixture.
+- **Pricing table growth**: more instance types (GPU families
+  especially), region-aware rates, spot/committed-use discounts as
+  configurable multipliers.
+- **EndpointSlice migration**: the collector reads `v1.Endpoints`,
+  which is deprecated upstream — migrate `idle-loadbalancer` to
+  EndpointSlices before it bites.
+- **New checks** as the community reports waste patterns (e.g. idle
+  node pools, oversized PVC storage classes, orphaned snapshots).
+- Windows/ARM testing; larger-cluster performance (pagination on
+  list calls if needed).
+
+## Non-goals (YAGNI)
+
+Decided against, on purpose:
+
+- **Auto-remediation / any mutating verb** — read-only by construction
+  is the trust design. Recommendations stop at concrete `kubectl`
+  commands.
+- **Cloud billing API integration** — node-label based estimation is
+  sufficient; the billing-integration space is a red ocean.
+- **Telemetry of any kind** — zero cluster data leaves the machine,
+  license checks included.
+- **Rust rewrite** — the battle is rule accuracy and shipping speed,
+  not language.

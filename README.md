@@ -56,7 +56,8 @@ figure carries its derivation and a confidence level (`certain` /
 
 Free (this repo): everything above. Planned paid tier: Prometheus-based
 p95/p99 precision right-sizing, HTML executive reports, trend tracking,
-CI cost-regression mode, multi-cluster aggregation.
+CI cost-regression mode, multi-cluster aggregation. Full details and
+status: [ROADMAP.md](ROADMAP.md).
 
 ## License
 
