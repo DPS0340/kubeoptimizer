@@ -44,6 +44,7 @@ func All() []Check {
 		LBCheck{},
 		ZombieCheck{},
 		NoRequestsCheck{},
+		GPUCheck{},
 	}
 }
 
