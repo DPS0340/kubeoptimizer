@@ -1,0 +1,22 @@
+# Minimal read-only access for kubeoptimizer. get/list only — the tool
+# has no mutating code paths at all.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: kubeoptimizer-readonly
+rules:
+  - apiGroups: [""]
+    resources:
+      - nodes
+      - pods
+      - persistentvolumes
+      - persistentvolumeclaims
+      - services
+      - endpoints
+    verbs: [get, list]
+  - apiGroups: [batch]
+    resources: [jobs]
+    verbs: [get, list]
+  - apiGroups: [metrics.k8s.io]
+    resources: [pods, nodes]
+    verbs: [get, list]
