@@ -45,6 +45,7 @@ func All() []Check {
 		ZombieCheck{},
 		NoRequestsCheck{},
 		GPUCheck{},
+		NodeUtilCheck{},
 	}
 }
 
