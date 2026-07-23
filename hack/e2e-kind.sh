@@ -5,8 +5,16 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 CLUSTER=kubeoptimizer-e2e
+
+# Isolate from the user's real kubeconfig: kind create/delete mutate the
+# active kubeconfig (and `kind delete` leaves current-context unset), so
+# everything below runs against a throwaway config file instead.
+KUBECONFIG="$(mktemp -t kubeoptimizer-e2e-kubeconfig.XXXXXX)"
+export KUBECONFIG
+trap 'rm -f "$KUBECONFIG"' EXIT
+
 kind create cluster --name "$CLUSTER" --wait 120s
-trap 'kind delete cluster --name "$CLUSTER"' EXIT
+trap 'kind delete cluster --name "$CLUSTER"; rm -f "$KUBECONFIG"' EXIT
 
 kubectl apply -f hack/fixtures.yaml
 kubectl wait --for=condition=Ready pod/e2e-no-requests --timeout=60s
