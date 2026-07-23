@@ -43,6 +43,7 @@ func All() []Check {
 		PVCheck{},
 		LBCheck{},
 		ZombieCheck{},
+		NoRequestsCheck{},
 	}
 }
 
