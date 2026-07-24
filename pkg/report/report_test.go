@@ -61,8 +61,34 @@ func TestRenderTable(t *testing.T) {
 			t.Fatalf("table output missing %q:\n%s", want, out)
 		}
 	}
+	// buffer is not a TTY → output must stay ANSI-free
+	if strings.Contains(out, "\033[") {
+		t.Fatalf("non-TTY output must not contain ANSI codes:\n%q", out)
+	}
 }
 
+func TestRenderTableColorForced(t *testing.T) {
+	t.Setenv("NO_COLOR", "") // may be set in the caller's environment
+	t.Setenv("CLICOLOR_FORCE", "1")
+	s, fs := fixtures()
+	var buf bytes.Buffer
+	RenderTable(&buf, Build("https://cluster.example", s, fs))
+	out := buf.String()
+	if !strings.Contains(out, "\033[") {
+		t.Fatal("CLICOLOR_FORCE=1 must produce ANSI codes")
+	}
+	// NO_COLOR wins over everything
+	t.Setenv("NO_COLOR", "1")
+	buf.Reset()
+	RenderTable(&buf, Build("https://cluster.example", s, fs))
+	if strings.Contains(buf.String(), "\033[") {
+		t.Fatal("NO_COLOR must strip ANSI codes")
+	}
+	// columns still align: cost cell and TOTAL present with codes on
+	if !strings.Contains(out, "$2233.80") {
+		t.Fatalf("colored output must keep values:\n%q", out)
+	}
+}
 func TestRenderJSON(t *testing.T) {
 	s, fs := fixtures()
 	var buf bytes.Buffer
