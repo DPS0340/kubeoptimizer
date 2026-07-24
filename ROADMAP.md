@@ -58,8 +58,23 @@ a handful of shared scan screenshots.
 ## Phase 1 — paid tier & first revenue
 
 Goal: the moment a team lead needs "a report to show the boss", there
-is something to buy. Price sketch: ~$199/cluster/year; free for
-individuals forever.
+is something to buy. Pricing (positioned against Kubecost Business at
+~$449/mo per 100 nodes — metered by cluster size, which is its most
+resented property):
+
+- **Free: forever, any cluster size, no core/spend caps.** Kubecost's
+  free tier caps at ~250 cores / $100k monitored spend; ours does not.
+- **Pro: $299/cluster/year, nodes unlimited.** Flat per-cluster —
+  never metered by nodes or cores. ~1/18 of Kubecost Business per year.
+- 10+ clusters: simple volume discount, nothing more complicated.
+- License keys verify offline; expired keys keep working forever on
+  versions released before expiry (no phone-home, no ransom).
+
+Positioning: we sell **conclusions, not dashboards** — precise
+rightsizing numbers plus the HTML report you hand your boss, with the
+`kubectl` commands to act on them. Against the free EKS Kubecost
+bundle: multi-cloud/on-prem, zero-install 30-second CLI scan, and the
+CI `--fail-over` gate.
 
 - [ ] **Prometheus data source** (`--prom-url`, auto-detect where
       possible): p95/p99 time-series based **precision right-sizing**

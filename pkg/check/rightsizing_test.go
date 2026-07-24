@@ -103,8 +103,12 @@ func TestRightsizingClampsFloorToRequest(t *testing.T) {
 	if f.MonthlyCost <= 0 {
 		t.Fatalf("expected positive savings, got %v", f.MonthlyCost)
 	}
-	if !strings.Contains(f.Action, "240m") {
-		t.Fatalf("Action should recommend CPU 240m (clamped to request), got: %q", f.Action)
+	// per-pod: clamped group 240m / 6 pods = 40m
+	if !strings.Contains(f.Action, "cpu=40m") {
+		t.Fatalf("Action should recommend per-pod CPU 40m (clamped to request), got: %q", f.Action)
+	}
+	if !strings.Contains(f.Action, "kubectl -n prod set resources deployment/small") {
+		t.Fatalf("Action should be an executable kubectl command, got: %q", f.Action)
 	}
 }
 
@@ -129,5 +133,30 @@ func TestRightsizingMixedDimension(t *testing.T) {
 	}
 	if !strings.Contains(f.Action, "300Mi") {
 		t.Fatalf("Action should keep mem at 300Mi (non-over axis), got: %q", f.Action)
+	}
+}
+
+func TestRightsizingActionKinds(t *testing.T) {
+	if !strings.Contains(rsAction("prod/ReplicaSet/web", 2, 400, 512*MiB),
+		"kubectl -n prod set resources deployment/web --requests=cpu=200m,memory=256Mi") {
+		t.Fatalf("ReplicaSet: %q", rsAction("prod/ReplicaSet/web", 2, 400, 512*MiB))
+	}
+	if !strings.Contains(rsAction("db/StatefulSet/pg", 1, 500, 1024*MiB),
+		"set resources statefulset/pg") {
+		t.Fatalf("StatefulSet: %q", rsAction("db/StatefulSet/pg", 1, 500, 1024*MiB))
+	}
+	// Bare pod / unknown owner: prose fallback, no kubectl set resources
+	a := rsAction("prod/Pod/one-off", 1, 100, 64*MiB)
+	if strings.Contains(a, "set resources") {
+		t.Fatalf("bare Pod must not get a set-resources command: %q", a)
+	}
+	// Every variant must carry the Helm/GitOps caveat
+	for _, a := range []string{
+		rsAction("prod/ReplicaSet/web", 2, 400, 512*MiB),
+		rsAction("prod/Pod/one-off", 1, 100, 64*MiB),
+	} {
+		if !strings.Contains(a, "Helm") {
+			t.Fatalf("action must mention Helm/GitOps caveat: %q", a)
+		}
 	}
 }
