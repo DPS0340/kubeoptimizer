@@ -1,0 +1,84 @@
+version: 2
+
+project_name: kubeoptimizer
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - id: kubeoptimizer
+    main: .
+    binary: kubeoptimizer
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w
+      - -X github.com/DPS0340/kubeoptimizer/cmd.version={{ .Version }}
+      - -X github.com/DPS0340/kubeoptimizer/cmd.commit={{ .ShortCommit }}
+      - -X github.com/DPS0340/kubeoptimizer/cmd.date={{ .Date }}
+
+archives:
+  - id: default
+    formats: [tar.gz]
+    name_template: >-
+      {{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}
+    format_overrides:
+      - goos: windows
+        formats: [zip]
+    files:
+      - LICENSE
+      - README.md
+
+checksum:
+  name_template: checksums.txt
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - "^chore:"
+
+release:
+  draft: false
+  prerelease: auto
+
+homebrew_casks:
+  - name: kubeoptimizer
+    repository:
+      owner: DPS0340
+      name: homebrew-tap
+      token: "{{ .Env.TAP_GITHUB_TOKEN }}"
+    directory: Casks
+    homepage: https://github.com/DPS0340/kubeoptimizer
+    description: Read-only Kubernetes cost waste scanner
+    license: Apache-2.0
+    # Binaries are not signed/notarized; strip the quarantine attribute.
+    hooks:
+      post:
+        install: |
+          if system_command("/usr/bin/xattr", args: ["-h"]).exit_status == 0
+            system_command "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "#{staged_path}/kubeoptimizer"]
+          end
+
+krews:
+  - name: kubeoptimizer
+    skip_upload: true
+    homepage: https://github.com/DPS0340/kubeoptimizer
+    short_description: Read-only Kubernetes cost waste scanner
+    description: |
+      kubeoptimizer scans a cluster with get/list access only and reports
+      estimated monthly waste. No agent, no telemetry, no mutations.
+    caveats: |
+      This plugin needs read-only (get/list) access to the cluster.
+      A minimal RBAC manifest is available in the project repository
+      under deploy/rbac.yaml.

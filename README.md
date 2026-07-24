@@ -19,9 +19,27 @@ TOTAL      $2402.51/mo estimated waste (9 findings)
 
 ## Install
 
+Homebrew (macOS/Linux):
+
+```
+brew install DPS0340/tap/kubeoptimizer
+```
+
+krew (as a kubectl plugin, once accepted into krew-index):
+
+```
+kubectl krew install kubeoptimizer
+kubectl kubeoptimizer scan
+```
+
+Or with Go:
+
 ```
 go install github.com/DPS0340/kubeoptimizer@latest
 ```
+
+Prebuilt binaries for linux/darwin/windows (amd64/arm64) are attached
+to [GitHub Releases](https://github.com/DPS0340/kubeoptimizer/releases).
 
 ## What it finds
 
