@@ -4,8 +4,8 @@ import (
 	"sort"
 	"time"
 
-	"github.com/DPS0340/kubeoptimizer/internal/check"
-	"github.com/DPS0340/kubeoptimizer/internal/snapshot"
+	"github.com/DPS0340/kubeoptimizer/pkg/check"
+	"github.com/DPS0340/kubeoptimizer/pkg/snapshot"
 )
 
 type Report struct {

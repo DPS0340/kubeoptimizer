@@ -7,7 +7,7 @@ import (
 	discoveryv1 "k8s.io/api/discovery/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	"github.com/DPS0340/kubeoptimizer/internal/snapshot"
+	"github.com/DPS0340/kubeoptimizer/pkg/snapshot"
 )
 
 func TestLBCheck(t *testing.T) {

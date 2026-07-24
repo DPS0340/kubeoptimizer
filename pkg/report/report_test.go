@@ -6,8 +6,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/DPS0340/kubeoptimizer/internal/check"
-	"github.com/DPS0340/kubeoptimizer/internal/snapshot"
+	"github.com/DPS0340/kubeoptimizer/pkg/check"
+	"github.com/DPS0340/kubeoptimizer/pkg/snapshot"
 )
 
 func fixtures() (*snapshot.Snapshot, []check.Finding) {

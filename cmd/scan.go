@@ -11,10 +11,10 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 	metricsclient "k8s.io/metrics/pkg/client/clientset/versioned"
 
-	"github.com/DPS0340/kubeoptimizer/internal/check"
-	"github.com/DPS0340/kubeoptimizer/internal/cost"
-	"github.com/DPS0340/kubeoptimizer/internal/report"
-	"github.com/DPS0340/kubeoptimizer/internal/snapshot"
+	"github.com/DPS0340/kubeoptimizer/pkg/check"
+	"github.com/DPS0340/kubeoptimizer/pkg/cost"
+	"github.com/DPS0340/kubeoptimizer/pkg/report"
+	"github.com/DPS0340/kubeoptimizer/pkg/snapshot"
 )
 
 var (

@@ -5,8 +5,8 @@ import (
 
 	corev1 "k8s.io/api/core/v1"
 
-	"github.com/DPS0340/kubeoptimizer/internal/cost"
-	"github.com/DPS0340/kubeoptimizer/internal/snapshot"
+	"github.com/DPS0340/kubeoptimizer/pkg/cost"
+	"github.com/DPS0340/kubeoptimizer/pkg/snapshot"
 )
 
 const (

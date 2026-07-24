@@ -573,8 +573,8 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
 
-	"github.com/DPS0340/kubeoptimizer/internal/cost"
-	"github.com/DPS0340/kubeoptimizer/internal/snapshot"
+	"github.com/DPS0340/kubeoptimizer/pkg/cost"
+	"github.com/DPS0340/kubeoptimizer/pkg/snapshot"
 )
 
 type Confidence string
@@ -688,8 +688,8 @@ import (
 	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	"github.com/DPS0340/kubeoptimizer/internal/cost"
-	"github.com/DPS0340/kubeoptimizer/internal/snapshot"
+	"github.com/DPS0340/kubeoptimizer/pkg/cost"
+	"github.com/DPS0340/kubeoptimizer/pkg/snapshot"
 )
 
 func testModel() *cost.Model { return cost.NewModel(cost.DefaultRates()) }
@@ -764,8 +764,8 @@ import (
 
 	corev1 "k8s.io/api/core/v1"
 
-	"github.com/DPS0340/kubeoptimizer/internal/cost"
-	"github.com/DPS0340/kubeoptimizer/internal/snapshot"
+	"github.com/DPS0340/kubeoptimizer/pkg/cost"
+	"github.com/DPS0340/kubeoptimizer/pkg/snapshot"
 )
 
 // PVCheck finds storage that is billed but serves no workload:
@@ -873,7 +873,7 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	"github.com/DPS0340/kubeoptimizer/internal/snapshot"
+	"github.com/DPS0340/kubeoptimizer/pkg/snapshot"
 )
 
 func TestLBCheck(t *testing.T) {
@@ -928,8 +928,8 @@ import (
 
 	corev1 "k8s.io/api/core/v1"
 
-	"github.com/DPS0340/kubeoptimizer/internal/cost"
-	"github.com/DPS0340/kubeoptimizer/internal/snapshot"
+	"github.com/DPS0340/kubeoptimizer/pkg/cost"
+	"github.com/DPS0340/kubeoptimizer/pkg/snapshot"
 )
 
 // LBCheck finds LoadBalancer services with zero ready endpoints:
@@ -1012,7 +1012,7 @@ import (
 	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	"github.com/DPS0340/kubeoptimizer/internal/snapshot"
+	"github.com/DPS0340/kubeoptimizer/pkg/snapshot"
 )
 
 func TestZombieCheck(t *testing.T) {
@@ -1094,8 +1094,8 @@ import (
 
 	corev1 "k8s.io/api/core/v1"
 
-	"github.com/DPS0340/kubeoptimizer/internal/cost"
-	"github.com/DPS0340/kubeoptimizer/internal/snapshot"
+	"github.com/DPS0340/kubeoptimizer/pkg/cost"
+	"github.com/DPS0340/kubeoptimizer/pkg/snapshot"
 )
 
 const (
@@ -1216,7 +1216,7 @@ import (
 	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	"github.com/DPS0340/kubeoptimizer/internal/snapshot"
+	"github.com/DPS0340/kubeoptimizer/pkg/snapshot"
 )
 
 func TestNoRequestsCheck(t *testing.T) {
@@ -1267,8 +1267,8 @@ package check
 import (
 	corev1 "k8s.io/api/core/v1"
 
-	"github.com/DPS0340/kubeoptimizer/internal/cost"
-	"github.com/DPS0340/kubeoptimizer/internal/snapshot"
+	"github.com/DPS0340/kubeoptimizer/pkg/cost"
+	"github.com/DPS0340/kubeoptimizer/pkg/snapshot"
 )
 
 // NoRequestsCheck flags workloads whose containers set no resource
@@ -1356,7 +1356,7 @@ import (
 	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	"github.com/DPS0340/kubeoptimizer/internal/snapshot"
+	"github.com/DPS0340/kubeoptimizer/pkg/snapshot"
 )
 
 func TestGPUCheck(t *testing.T) {
@@ -1412,8 +1412,8 @@ import (
 
 	corev1 "k8s.io/api/core/v1"
 
-	"github.com/DPS0340/kubeoptimizer/internal/cost"
-	"github.com/DPS0340/kubeoptimizer/internal/snapshot"
+	"github.com/DPS0340/kubeoptimizer/pkg/cost"
+	"github.com/DPS0340/kubeoptimizer/pkg/snapshot"
 )
 
 var gpuResource = corev1.ResourceName("nvidia.com/gpu")
@@ -1512,7 +1512,7 @@ import (
 	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	"github.com/DPS0340/kubeoptimizer/internal/snapshot"
+	"github.com/DPS0340/kubeoptimizer/pkg/snapshot"
 )
 
 func TestNodeUtilCheck(t *testing.T) {
@@ -1575,8 +1575,8 @@ import (
 
 	corev1 "k8s.io/api/core/v1"
 
-	"github.com/DPS0340/kubeoptimizer/internal/cost"
-	"github.com/DPS0340/kubeoptimizer/internal/snapshot"
+	"github.com/DPS0340/kubeoptimizer/pkg/cost"
+	"github.com/DPS0340/kubeoptimizer/pkg/snapshot"
 )
 
 const nodeUtilThresholdPct = 50
@@ -1679,7 +1679,7 @@ import (
 	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	"github.com/DPS0340/kubeoptimizer/internal/snapshot"
+	"github.com/DPS0340/kubeoptimizer/pkg/snapshot"
 )
 
 func rsPod(name, rsName, cpu, mem string) corev1.Pod {
@@ -1761,8 +1761,8 @@ import (
 
 	corev1 "k8s.io/api/core/v1"
 
-	"github.com/DPS0340/kubeoptimizer/internal/cost"
-	"github.com/DPS0340/kubeoptimizer/internal/snapshot"
+	"github.com/DPS0340/kubeoptimizer/pkg/cost"
+	"github.com/DPS0340/kubeoptimizer/pkg/snapshot"
 )
 
 const (
@@ -1904,8 +1904,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/DPS0340/kubeoptimizer/internal/check"
-	"github.com/DPS0340/kubeoptimizer/internal/snapshot"
+	"github.com/DPS0340/kubeoptimizer/pkg/check"
+	"github.com/DPS0340/kubeoptimizer/pkg/snapshot"
 )
 
 func fixtures() (*snapshot.Snapshot, []check.Finding) {
@@ -1979,8 +1979,8 @@ import (
 	"sort"
 	"time"
 
-	"github.com/DPS0340/kubeoptimizer/internal/check"
-	"github.com/DPS0340/kubeoptimizer/internal/snapshot"
+	"github.com/DPS0340/kubeoptimizer/pkg/check"
+	"github.com/DPS0340/kubeoptimizer/pkg/snapshot"
 )
 
 type Report struct {
@@ -2171,10 +2171,10 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 	metricsclient "k8s.io/metrics/pkg/client/clientset/versioned"
 
-	"github.com/DPS0340/kubeoptimizer/internal/check"
-	"github.com/DPS0340/kubeoptimizer/internal/cost"
-	"github.com/DPS0340/kubeoptimizer/internal/report"
-	"github.com/DPS0340/kubeoptimizer/internal/snapshot"
+	"github.com/DPS0340/kubeoptimizer/pkg/check"
+	"github.com/DPS0340/kubeoptimizer/pkg/cost"
+	"github.com/DPS0340/kubeoptimizer/pkg/report"
+	"github.com/DPS0340/kubeoptimizer/pkg/snapshot"
 )
 
 var (
