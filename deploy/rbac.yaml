@@ -12,7 +12,9 @@ rules:
       - persistentvolumes
       - persistentvolumeclaims
       - services
-      - endpoints
+    verbs: [get, list]
+  - apiGroups: [discovery.k8s.io]
+    resources: [endpointslices]
     verbs: [get, list]
   - apiGroups: [batch]
     resources: [jobs]

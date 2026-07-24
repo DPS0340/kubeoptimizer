@@ -37,6 +37,20 @@ func TestBuildSortsAndTotals(t *testing.T) {
 	}
 }
 
+func TestBuildNamespaceNote(t *testing.T) {
+	s := &snapshot.Snapshot{Namespace: "team-a", HasMetrics: true}
+	r := Build("https://cluster.example", s, nil)
+	joined := strings.Join(r.Notes, "\n")
+	if !strings.Contains(joined, "limited to namespace team-a") {
+		t.Fatalf("notes must flag the namespace filter: %v", r.Notes)
+	}
+	// unfiltered scan must not carry the note
+	r2 := Build("https://cluster.example", &snapshot.Snapshot{HasMetrics: true}, nil)
+	if strings.Contains(strings.Join(r2.Notes, "\n"), "limited to namespace") {
+		t.Fatalf("unexpected namespace note: %v", r2.Notes)
+	}
+}
+
 func TestRenderTable(t *testing.T) {
 	s, fs := fixtures()
 	var buf bytes.Buffer

@@ -28,6 +28,10 @@ func Build(cluster string, s *snapshot.Snapshot, findings []check.Finding) Repor
 		total += f.MonthlyCost
 	}
 	var notes []string
+	if s.Namespace != "" {
+		notes = append(notes, "scan limited to namespace "+s.Namespace+
+			" — cluster-scoped checks skipped (underutilized-nodes, idle-gpu, unused-pv on PVs)")
+	}
 	if !s.HasMetrics {
 		notes = append(notes, "metrics-server not detected — usage-based checks skipped (right-sizing)")
 	}

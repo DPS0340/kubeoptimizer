@@ -56,6 +56,20 @@ to [GitHub Releases](https://github.com/DPS0340/kubeoptimizer/releases).
 Data sources are auto-detected. No metrics-server? API-only checks
 still run and the report says exactly what was skipped.
 
+## Scripting
+
+Limit the scan and wire it into CI or cron:
+
+```
+kubeoptimizer scan --namespace payments          # one namespace only
+kubeoptimizer scan --fail-over 500               # exit 2 if waste > $500/mo
+kubeoptimizer scan -o json | jq .total_monthly_usd
+```
+
+Exit codes: `0` clean (or under threshold), `1` scan error, `2` waste
+exceeded `--fail-over`. With `--namespace`, cluster-scoped checks
+(nodes, PVs) are skipped and the report says so.
+
 ## Pricing model
 
 Node costs come from an embedded on-demand pricing table keyed by the

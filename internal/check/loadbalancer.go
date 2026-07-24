@@ -22,9 +22,13 @@ func (LBCheck) Run(s *snapshot.Snapshot, m *cost.Model) []Finding {
 			continue
 		}
 		ready := 0
-		if ep := s.Endpoints[snapshot.Key(svc.Namespace, svc.Name)]; ep != nil {
-			for _, sub := range ep.Subsets {
-				ready += len(sub.Addresses)
+		for _, es := range s.EndpointSlices[snapshot.Key(svc.Namespace, svc.Name)] {
+			for _, ep := range es.Endpoints {
+				// Ready == nil means "unknown", which consumers must treat
+				// as ready per the EndpointSlice API contract.
+				if ep.Conditions.Ready == nil || *ep.Conditions.Ready {
+					ready++
+				}
 			}
 		}
 		if ready > 0 {
